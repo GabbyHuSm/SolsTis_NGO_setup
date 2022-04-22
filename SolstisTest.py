@@ -5,16 +5,41 @@
 import pylablib.devices.M2
 import csv
 import datetime
+import os
 
+# --------------------------------------------------------------------------------
+# Accessing the wavemeter WS7 
+from pylablib.devices import HighFinesse
+import pylablib.devices.HighFinesse.wlm
+
+app_folder = "C:\Program Files\HighFinesse\Wavelength Meter WS7 883"
+
+dll_path = os.path.join(app_folder, "Projects","64")
+app_path = os.path.join(app_folder,"wlm_ws7.exe")
+pylablib.devices.HighFinesse.wlm.WLM(7, dll_path = dll_path, app_path = app_path)
 # --------------------------------------------------------------------------------
 # Connect to laser
 # IP address and Port determined by Remote Connection on Webpage
 laser = pylablib.devices.M2.solstis.Solstis("192.168.1.222", 39901)
-# laser.connnect_wavemeter()
+pump = pylablib.devices.M2.solstis.Solstis("192.168.1.225",49946)
+#laser.connect_wavemeter()
+
+# Wavemeter connection, run through the Start Link Command in the JSON manual 
+#{
+#    "ConnectionWavemeter":
+#    {
+#        "transmission_id":[001],
+#        "op":"start_link",
+#        {
+#            "ip_address": "192.168.1.10.39933"
+#        }
+#}
+
+# Attempt to get the system 
 
 # Get the system status, useful for checking laser status?
 print(laser.get_system_status())
-
+print(laser.get_full_fine_tuning_status())
 # --------------------------------------------------------------------------------
 # Set up and start writing to a data file
 
@@ -28,10 +53,10 @@ writer = csv.writer(file)
 writer.writerow(headers)
 
 # --------------------------------------------------------------------------------
-# Example of sweeping wavelengths
+# Example of sweeping wavelengths GHz 870 - 900 nm
 
-WAVELENGTH_LOWER = 0
-WAVELENGTH_UPPER = 1000
+WAVELENGTH_LOWER = 344589
+WAVELENGTH_UPPER = 333102
 WAVELENGTH_STEP = 1
 
 # For loop performs the sweep
@@ -49,3 +74,6 @@ for wavelength in range(WAVELENGTH_LOWER, WAVELENGTH_UPPER, WAVELENGTH_STEP):
         raise ValueError()
 
 # --------------------------------------------------------------------------------
+# Wavemeter Data Aquisition
+for wavelength in range(WAVELENGTH_LOWER, WAVELENGTH_UPPER, WAVELENGTH_STEP):
+    get_wavelength()
