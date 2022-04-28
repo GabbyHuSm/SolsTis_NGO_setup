@@ -12,11 +12,11 @@ import os
 from pylablib.devices import HighFinesse
 import pylablib.devices.HighFinesse.wlm
 
-app_folder = "C:\Program Files\HighFinesse\Wavelength Meter WS7 883"
+app_folder = "C:\Program Files (x86)\HighFinesse\Wavelength Meter WS7 883"
 
 dll_path = os.path.join(app_folder, "Projects","64")
 app_path = os.path.join(app_folder,"wlm_ws7.exe")
-pylablib.devices.HighFinesse.wlm.WLM(7, dll_path = dll_path, app_path = app_path)
+wavemeter = pylablib.devices.HighFinesse.wlm.WLM(7, dll_path = dll_path, app_path = app_path)
 # --------------------------------------------------------------------------------
 # Connect to laser
 # IP address and Port determined by Remote Connection on Webpage
@@ -74,6 +74,19 @@ for wavelength in range(WAVELENGTH_LOWER, WAVELENGTH_UPPER, WAVELENGTH_STEP):
         raise ValueError()
 
 # --------------------------------------------------------------------------------
-# Wavemeter Data Aquisition
-for wavelength in range(WAVELENGTH_LOWER, WAVELENGTH_UPPER, WAVELENGTH_STEP):
-    get_wavelength()
+# Wavemeter making sure there is a connection
+wavemeter.open()
+wavemeter.is_opened()
+# Frequency range 800nm to 950 nm in Hz
+FREQUENCY_LOWER = 374700000000000
+FREQUENCY_UPPER = 315571000000000
+FREQUENCY_STEP = 200000000000
+# Sweep
+# Wavemeter Data Aquisition - with time of aquisition
+wavemeter.start_measurement
+laser.setup_terascan("line",(374700000000000,315571000000000),"200000000000")
+laser.start_terascan
+for frequency in range(FREQUENCY_LOWER, FREQUENCY_UPPER, FREQUENCY_STEP):
+    print(f"{datetime.datetime.now()}: {wavemeter.get_frequency(error_on_invalid = False)})
+    if frequency==FREQUENCY_UPPER 
+    wavemeter.stop_measurement
